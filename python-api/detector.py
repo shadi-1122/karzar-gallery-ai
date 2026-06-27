@@ -8,21 +8,45 @@ from insightface.app import FaceAnalysis
 class FaceDetector:
 
     def __init__(self):
-        self.model = FaceAnalysis()
+        self.model = FaceAnalysis(
+            name="buffalo_s",
+            allowed_modules=[
+                "detection",
+                "recognition",
+            ],
+            providers=["CPUExecutionProvider"],
+        )
 
-        # Use CPU
-        self.model.prepare(ctx_id=-1)
+        self.model.prepare(
+            ctx_id=-1,
+            det_size=(320, 320),
+        )
 
 
 detector = FaceDetector()
 
 
 def detect_faces(url):
-    response = requests.get(url)
+    response = requests.get(
+        url,
+        stream=True,
+        timeout=20
+    )
     print(response.status_code)
 
     image = np.asarray(bytearray(response.content), dtype=np.uint8)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+    
+    h, w = image.shape[:2]
+
+    max_size = 1000
+
+    if max(h, w) > max_size:
+        scale = max_size / max(h, w)
+        image = cv2.resize(
+            image,
+            (int(w * scale), int(h * scale))
+        )
 
     print(image.shape)
 
