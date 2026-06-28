@@ -6,6 +6,8 @@ import PhotoGrid from "@/components/admin/PhotoGrid";
 import { Photo } from "@/components/admin/types";
 import PhotoStats from "@/components/admin/PhotoStats";
 
+export const dynamic = "force-dynamic";
+
 export default async function PhotosPage() {
   await connectDB();
 
