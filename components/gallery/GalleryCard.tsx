@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import type { GalleryPhoto } from "./types";
+import { cloudinaryImage } from "@/lib/cloudinary-image";
 
 type Props = {
   photo: GalleryPhoto;
@@ -68,7 +69,7 @@ export default function GalleryCard({ photo, onClick }: Props) {
       >
         <div className="relative">
           <Image
-            src={photo.imageUrl}
+            src={cloudinaryImage(photo.imageUrl)}
             alt=""
             width={photo.width}
             height={photo.height}

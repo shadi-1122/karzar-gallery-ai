@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Photo } from "@/store/search-store";
+import { cloudinaryImage } from "@/lib/cloudinary-image";
 
 type Props = {
   photos: Photo[];
@@ -16,7 +17,7 @@ export default function ResultGrid({ photos }: Props) {
           className="relative aspect-[3/4] overflow-hidden rounded-xl"
         >
           <Image
-            src={photo.imageUrl}
+            src={cloudinaryImage(photo.imageUrl)}
             alt="Photo"
             fill
             className="object-cover"

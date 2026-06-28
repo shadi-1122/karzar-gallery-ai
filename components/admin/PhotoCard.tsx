@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import DeletePhotoDialog from "./DeletePhotoDialog";
 
 import type { Photo } from "./types";
+import { cloudinaryImage } from "@/lib/cloudinary-image";
 
 type Props = {
   photo: Photo;
@@ -80,7 +81,7 @@ export default function PhotoCard({ photo }: Props) {
       <Card className="overflow-hidden transition-all hover:shadow-xl">
         <div className="relative">
           <Image
-            src={photo.imageUrl}
+            src={cloudinaryImage(photo.imageUrl)}
             alt={photo.publicId}
             width={photo.width || 1200}
             height={photo.height || 1600}
