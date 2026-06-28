@@ -6,6 +6,13 @@ import { Search } from "lucide-react";
 import PhotoCard from "./PhotoCard";
 import type { Photo } from "./types";
 import PhotoFilters from "./PhotoFilters";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   photos: Photo[];
@@ -14,6 +21,7 @@ type Props = {
 export default function PhotoGrid({ photos }: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [faceFilter, setFaceFilter] = useState("all");
 
   const filtered = useMemo(() => {
     return photos.filter((photo) => {
@@ -25,23 +33,48 @@ export default function PhotoGrid({ photos }: Props) {
 
       switch (filter) {
         case "processed":
-          return photo.processed;
+          if (!photo.processed) return false;
+          break;
 
         case "faces":
-          return photo.faceCount > 0;
+          if (photo.faceCount <= 0) return false;
+          break;
 
         case "failed":
-          return !photo.processed;
-
-        default:
-          return true;
+          if (photo.processed) return false;
+          break;
       }
+
+      if (faceFilter !== "all" && photo.faceCount !== Number(faceFilter)) {
+        return false;
+      }
+
+      return true;
     });
-  }, [photos, query, filter]);
+  }, [photos, query, filter, faceFilter]);
 
   return (
     <div className="space-y-6">
       <PhotoFilters value={filter} onChange={setFilter} />
+      <div className="flex flex-wrap gap-4">
+        <Select value={faceFilter} onValueChange={setFaceFilter}>
+          <SelectTrigger className="w-52">
+            <SelectValue placeholder="Number of Faces" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="all">All Photos</SelectItem>
+
+            {[...new Set(photos.map((p) => p.faceCount))]
+              .sort((a, b) => a - b)
+              .map((count) => (
+                <SelectItem key={count} value={count.toString()}>
+                  {count} Face{count !== 1 ? "s" : ""}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
       <div className="relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 
