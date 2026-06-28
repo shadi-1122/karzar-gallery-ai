@@ -4,6 +4,7 @@ import Face from "@/models/Face";
 import { uploadToCloudinary } from "./upload-to-cloudinary";
 import { detectFaces } from "./face-service";
 import { findOrCreatePerson } from "./person-service";
+import { cloudinaryImage } from "./cloudinary-image";
 
 type ProcessUploadResult =
   | {
@@ -38,7 +39,8 @@ export async function processUpload(file: File): Promise<ProcessUploadResult> {
       faceCount: 0,
     });
 
-    const detectedFaces = await detectFaces(upload.secure_url);
+    // const detectedFaces = await detectFaces(upload.secure_url);
+    const detectedFaces = await detectFaces(cloudinaryImage(upload.secure_url));
 
     console.log(`${file.name}: ${detectedFaces.length} faces detected`);
 
