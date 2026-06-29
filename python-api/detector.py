@@ -9,7 +9,6 @@ class FaceDetector:
 
     def __init__(self):
         self.model = FaceAnalysis(
-            name="buffalo_s",
             allowed_modules=[
                 "detection",
                 "recognition",
@@ -19,7 +18,6 @@ class FaceDetector:
 
         self.model.prepare(
             ctx_id=-1,
-            det_size=(320, 320),
         )
 
 

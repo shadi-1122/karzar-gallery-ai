@@ -5,25 +5,53 @@ import { connectDB } from "@/lib/mongodb";
 import Person from "@/models/Person";
 
 export async function GET() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const people = await Person.find()
-    .sort({
-      photoCount: -1,
+    const people = await Person.find({
+      active: true,
     })
-    .lean();
+      .populate({
+        path: "representativePhoto",
+        select: "imageUrl width height publicId",
+      })
+      .sort({
+        photoCount: -1,
+      })
+      .lean();
 
-  return NextResponse.json({
-    success: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const serialized = people.map((person: any) => ({
+      ...person,
 
-    people: people.map((person) => ({
       _id: person._id.toString(),
 
-      representativePhoto: person.representativePhoto,
+      representativePhoto: person.representativePhoto && {
+        ...person.representativePhoto,
 
-      representativeFace: person.representativeFace,
+        _id: person.representativePhoto._id.toString(),
+      },
+    }));
 
-      photoCount: person.photoCount,
-    })),
-  });
+    return NextResponse.json({
+      success: true,
+
+      total: serialized.length,
+
+      people: serialized,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+
+        error: "Failed to fetch people.",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }

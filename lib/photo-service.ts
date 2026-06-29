@@ -35,7 +35,7 @@ export async function deletePhoto(photoId: string) {
     }).session(session);
 
     const affectedPeople = [
-      ...new Set(faces.map((face) => face.personId.toString())),
+      ...new Set(faces.map((face) => String(face.personId))),
     ];
 
     // -------------------------
@@ -51,29 +51,50 @@ export async function deletePhoto(photoId: string) {
     // -------------------------
 
     for (const personId of affectedPeople) {
-      const count = await Face.countDocuments({
+      const remainingFace = await Face.findOne({
         personId,
-      }).session(session);
+      })
+        .populate({
+          path: "photoId",
+          select: "imageUrl publicId width height",
+        })
+        .session(session);
 
-      if (count === 0) {
+      if (!remainingFace) {
         await Person.findByIdAndDelete(personId, {
           session,
         });
 
         console.log(`Deleted Person ${personId}`);
-      } else {
-        await Person.findByIdAndUpdate(
-          personId,
-          {
-            photoCount: count,
-          },
-          {
-            session,
-          },
-        );
 
-        console.log(`Updated Person ${personId} (${count} photos)`);
+        continue;
       }
+
+      const photoCount = (
+        await Face.distinct("photoId", {
+          personId,
+        })
+      ).length;
+
+      await Person.findByIdAndUpdate(
+        personId,
+        {
+          photoCount,
+
+          representativePhoto: remainingFace.photoId._id,
+
+          representativeFace: remainingFace.bbox,
+
+          representativeEmbedding: remainingFace.embedding,
+
+          representativeImage: remainingFace.photoId.imageUrl,
+        },
+        {
+          session,
+        },
+      );
+
+      console.log(`Updated Person ${personId}`);
     }
 
     // -------------------------
@@ -109,9 +130,10 @@ export async function deletePhoto(photoId: string) {
 
   if (publicId) {
     try {
-      const result = await cloudinary.uploader.destroy(publicId);
+      await cloudinary.uploader.destroy(publicId);
 
-      console.log("Cloudinary:", result);
+      console.log("Deleted Cloudinary Image");
+
     } catch (error) {
       console.error("Cloudinary Delete Failed");
 

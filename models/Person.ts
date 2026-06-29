@@ -20,6 +20,10 @@ const PersonSchema = new Schema(
       height: Number,
     },
 
+    representativeImage: {
+      type: String,
+    },
+
     photoCount: {
       type: Number,
       default: 1,
