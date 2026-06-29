@@ -41,6 +41,12 @@ export async function searchEmbedding(embedding: number[]) {
 
   const sorted = [...best.entries()].sort((a, b) => b[1] - a[1]);
 
+  if (sorted.length === 0) {
+    return [];
+  }
+
+  console.log("Best similarity:", sorted[0][1]);
+
   const ids = sorted.map((x) => x[0]);
 
   const photos = await Photo.find({

@@ -1,8 +1,9 @@
 import Person from "@/models/Person";
 
 import { cosineSimilarity } from "./similarity";
+import Face from "@/models/Face";
 
-export const FACE_THRESHOLD =  0.80;
+export const FACE_THRESHOLD = 0.6;
 
 type BBox = {
   x: number;
@@ -12,29 +13,39 @@ type BBox = {
 };
 
 export async function findBestPerson(embedding: number[]) {
-  const persons = await Person.find(
-    {},
-    {
-      representativeEmbedding: 1,
-      photoCount: 1,
-    },
-  ).lean();
+  const faces = await Face.find().lean();
 
-  let bestPerson = null;
+  console.log("Faces:", faces.length);
+  console.log(faces[0]);
 
-  let bestScore = Number.NEGATIVE_INFINITY;
+  let bestFace = null;
+  let bestScore = -1;
 
-  for (const person of persons) {
-    const score = cosineSimilarity(embedding, person.representativeEmbedding);
+  for (const face of faces) {
+    const score = cosineSimilarity(embedding, face.embedding);
 
     if (score > bestScore) {
       bestScore = score;
-      bestPerson = person;
+      bestFace = face;
     }
   }
 
+  console.log("Best Score:", bestScore);
+  console.log("Threshold:", FACE_THRESHOLD);
+  console.log("Best Face:", bestFace?._id);
+
+  // Reject weak matches
+  if (!bestFace || bestScore < FACE_THRESHOLD) {
+    return {
+      person: null,
+      similarity: bestScore,
+    };
+  }
+
+  const person = await Person.findById(bestFace.personId);
+
   return {
-    person: bestPerson,
+    person,
     similarity: bestScore,
   };
 }

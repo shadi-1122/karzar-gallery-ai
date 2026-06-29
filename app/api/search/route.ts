@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { searchPhotos } from "@/lib/face-search";
 import { generateEmbedding } from "@/lib/python-search";
+// import { searchEmbedding } from "@/lib/search-face";
 
 export async function POST(req: Request) {
   try {
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
     const embedding = await generateEmbedding(file);
 
     const photos = await searchPhotos(embedding);
+    // const photos = await searchEmbedding(embedding);
 
     return NextResponse.json({
       success: true,
