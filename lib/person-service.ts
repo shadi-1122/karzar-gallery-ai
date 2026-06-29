@@ -2,7 +2,7 @@ import Person from "@/models/Person";
 
 import { cosineSimilarity } from "./similarity";
 
-const FACE_THRESHOLD =  0.62;
+export const FACE_THRESHOLD =  0.80;
 
 type BBox = {
   x: number;

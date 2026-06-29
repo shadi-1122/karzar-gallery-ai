@@ -2,6 +2,7 @@ import Face from "@/models/Face";
 import Photo from "@/models/Photo";
 
 import { cosineSimilarity } from "./similarity";
+import { FACE_THRESHOLD } from "./person-service";
 
 export async function searchEmbedding(embedding: number[]) {
   const faces = await Face.find().lean();
@@ -15,7 +16,7 @@ export async function searchEmbedding(embedding: number[]) {
       face.embedding,
     );
 
-    if (score < 0.55) continue;
+    if (score < FACE_THRESHOLD) continue;
 
     const id = face.photoId.toString();
 
