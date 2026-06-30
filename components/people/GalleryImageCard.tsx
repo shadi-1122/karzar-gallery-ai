@@ -47,12 +47,12 @@ type Props = {
 export default function GalleryImageCard({ person, photo, onOpen }: Props) {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const downloadUrl = photo.imageUrl.replace(
-    "/image/upload/",
-    "/image/upload/fl_attachment/",
-  );
+  // const downloadUrl = photo.imageUrl.replace(
+  //   "/image/upload/",
+  //   "/image/upload/fl_attachment/",
+  // );
 
-  window.open(downloadUrl);
+  // window.open(downloadUrl);
 
   async function downloadImage(e: React.MouseEvent) {
     e.stopPropagation();

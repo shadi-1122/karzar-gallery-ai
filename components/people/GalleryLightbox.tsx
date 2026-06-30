@@ -7,7 +7,13 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Photo } from "@/components/admin/types";
-import { Download, ZoomIn, ZoomOut, Trash2 } from "lucide-react";
+import { Download, ZoomIn, ZoomOut, Trash2, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import DeletePhotoDialog from "@/components/admin/DeletePhotoDialog";
 import { ExternalLink, Copy } from "lucide-react";
@@ -161,7 +167,10 @@ export default function GalleryLightbox({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="h-screen max-w-screen border-0 bg-black p-0">
+      <DialogContent
+        className="h-screen w-screen border-0 bg-black p-0"
+        showCloseButton={false}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={photo._id}
@@ -213,49 +222,51 @@ export default function GalleryLightbox({
               transition={{
                 duration: 0.25,
               }}
-              className="absolute left-0 right-0 top-0 flex items-center justify-between bg-black/50 p-4 backdrop-blur"
+              className="absolute left-0 right-0 top-0 flex items-center justify-end gap-2 bg-black/50 p-4 backdrop-blur"
             >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="secondary">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onClick={zoomIn}>
+                    <ZoomIn className="mr-2 h-4 w-4" />
+                    <span>Zoom In</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={zoomOut}>
+                    <ZoomOut className="mr-2 h-4 w-4" />
+                    <span>Zoom Out</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={downloadPhoto}>
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Download</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={downloadCloudinary}>
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Download Original</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={copyUrl}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    <span>Copy URL</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={openOriginal}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    <span>Open Original</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button size="icon" variant="secondary" onClick={onClose}>
                 <X className="h-5 w-5" />
               </Button>
-
-              <div className="text-center">
-                <h2 className="font-medium text-white">{photo.publicId}</h2>
-
-                <p className="text-xs text-white/70">
-                  {index + 1} / {photos.length}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button size="icon" variant="secondary" onClick={zoomOut}>
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-
-                <Button size="icon" variant="secondary" onClick={zoomIn}>
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-
-                <Button size="icon" variant="secondary" onClick={downloadPhoto}>
-                  <Download className="h-4 w-4" />
-                </Button>
-
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  onClick={downloadCloudinary}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-
-                <Button size="icon" variant="secondary" onClick={copyUrl}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-
-                <Button size="icon" variant="secondary" onClick={openOriginal}>
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              </div>
             </motion.div>
 
             {/* Previous */}

@@ -17,6 +17,7 @@ type Props = {
 };
 
 export default function PersonCard({ person }: Props) {
+  console.log(person.representativePhoto.imageUrl);
   return (
     <Link href={`/admin/people/${person._id}`}>
       <Card className="overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
